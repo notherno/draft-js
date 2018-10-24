@@ -33,6 +33,7 @@ const ReactDOM = require('ReactDOM');
 const Scroll = require('Scroll');
 const Style = require('Style');
 const UserAgent = require('UserAgent');
+const {Map} = require('immutable');
 
 const cx = require('cx');
 const emptyFunction = require('emptyFunction');
@@ -61,6 +62,7 @@ const handlerMap = {
 
 type State = {
   contentsKey: number,
+  blockKeyRestoreMap: Map,
 };
 
 let didInitODS = false;
@@ -251,8 +253,11 @@ class DraftEditor extends React.Component<DraftEditorProps, State> {
       });
     }
 
-    // See `restoreEditorDOM()`.
-    this.state = {contentsKey: 0};
+    this.state = {
+      // See `restoreEditorDOM()`.
+      contentsKey: 0,
+      blockKeyRestoreMap: new Map({}),
+    };
   }
 
   /**
@@ -317,6 +322,7 @@ class DraftEditor extends React.Component<DraftEditorProps, State> {
       textAlignment,
       textDirectionality,
     } = this.props;
+    const {contentsKey, blockKeyRestoreMap} = this.state;
 
     const rootClass = cx({
       'DraftEditor/root': true,
@@ -354,7 +360,8 @@ class DraftEditor extends React.Component<DraftEditorProps, State> {
       customStyleFn,
       editorKey: this._editorKey,
       editorState,
-      key: 'contents' + this.state.contentsKey,
+      key: `contents${contentsKey}`,
+      blockKeyRestoreMap,
       textDirectionality,
     };
 
@@ -538,6 +545,29 @@ class DraftEditor extends React.Component<DraftEditorProps, State> {
    */
   restoreEditorDOM = (scrollPosition?: DraftScrollPosition): void => {
     this.setState({contentsKey: this.state.contentsKey + 1}, () => {
+      this.focus(scrollPosition);
+    });
+  };
+
+  /**
+   * @todo fill out docs
+   */
+  restoreEditorBlocks = (
+    targetBlockKeys: string[],
+    scrollPosition?: DraftScrollPosition,
+  ): void => {
+    let {blockKeyRestoreMap} = this.state;
+
+    targetBlockKeys.forEach(blockKey => {
+      blockKeyRestoreMap = blockKeyRestoreMap.set(
+        blockKey,
+        blockKeyRestoreMap.has(blockKey)
+          ? blockKeyRestoreMap.get(blockKey) + 1
+          : 1,
+      );
+    });
+
+    this.setState({blockKeyRestoreMap}, () => {
       this.focus(scrollPosition);
     });
   };
