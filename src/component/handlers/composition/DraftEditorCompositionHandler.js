@@ -162,11 +162,12 @@ const DraftEditorCompositionHandler = {
       const anchorKey = selectionState.getAnchorKey();
       const focusKey = selectionState.getFocusKey();
 
-      if (anchorKey !== focusKey) {
-        editor.restoreEditorDOM();
-      } else {
+      if (anchorKey === focusKey) {
         // Update the block which currently have focus
         editor.restoreEditorBlock(focusKey);
+      } else {
+        // If selection contains 2 or more blocks, reset the whole contents
+        editor.restoreEditorDOM();
       }
     }
 
