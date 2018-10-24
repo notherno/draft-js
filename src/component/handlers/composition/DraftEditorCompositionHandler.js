@@ -186,9 +186,17 @@ const DraftEditorCompositionHandler = {
       ) {
         return;
       }
+
+      const newEditorState = mustReset
+        ? EditorState.set(editorState, {
+            nativelyRenderedContent: null,
+            forceSelection: true,
+          })
+        : editorState;
+
       editor.update(
         EditorState.push(
-          editorState,
+          newEditorState,
           // If characters have been composed, re-rendering with the update
           // is sufficient to reset the editor.
           DraftModifier.replaceText(
