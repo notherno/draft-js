@@ -174,6 +174,8 @@ const DraftEditorCompositionHandler = {
           ? blockKeys.slice(anchorKeyIndex, focusKeyIndex + 1)
           : blockKeys.slice(focusKeyIndex, anchorKeyIndex + 1);
 
+      console.log({ blockKeys, targetBlocks, anchorKeyIndex, focusKeyIndex });
+
       // Update the block which currently have focus
       editor.restoreEditorBlocks(targetBlocks);
     }
