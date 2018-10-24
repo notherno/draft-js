@@ -164,8 +164,10 @@ const DraftEditorCompositionHandler = {
       const anchorKeyIndex = blockKeys.indexOf(selectionState.getAnchorKey());
       const focusKeyIndex = blockKeys.indexOf(selectionState.getFocusKey());
 
+      console.log({ blockKeys, targetBlocks, anchorKeyIndex, focusKeyIndex });
+
       invariant(
-        anchorKeyIndex === -1 || focusKeyIndex === -1,
+        anchorKeyIndex !== -1 && focusKeyIndex !== -1,
         'Content does not contain blocks in selection',
       );
 
@@ -174,7 +176,6 @@ const DraftEditorCompositionHandler = {
           ? blockKeys.slice(anchorKeyIndex, focusKeyIndex + 1)
           : blockKeys.slice(focusKeyIndex, anchorKeyIndex + 1);
 
-      console.log({ blockKeys, targetBlocks, anchorKeyIndex, focusKeyIndex });
 
       // Update the block which currently have focus
       editor.restoreEditorBlocks(targetBlocks);
