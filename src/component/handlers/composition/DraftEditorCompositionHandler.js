@@ -159,7 +159,8 @@ const DraftEditorCompositionHandler = {
       entityKey !== null;
 
     if (mustReset) {
-      editor.restoreEditorDOM();
+      // Update the block which currently have focus
+      editor.restoreEditorBlocks([editorState.getSelection().getFocusKey()]);
     }
 
     editor.exitCurrentMode();
