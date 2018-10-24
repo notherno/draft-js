@@ -21,6 +21,7 @@ const Keys = require('Keys');
 
 const getEntityKeyForSelection = require('getEntityKeyForSelection');
 const gkx = require('gkx');
+const invariant = require('invariant');
 const isEventHandled = require('isEventHandled');
 const isSelectionAtLeafStart = require('isSelectionAtLeafStart');
 
@@ -146,11 +147,11 @@ const DraftEditorCompositionHandler = {
       inCompositionMode: false,
     });
 
+    const contentState = editorState.getCurrentContent();
+    const selectionState = editorState.getSelection();
+
     const currentStyle = editorState.getCurrentInlineStyle();
-    const entityKey = getEntityKeyForSelection(
-      editorState.getCurrentContent(),
-      editorState.getSelection(),
-    );
+    const entityKey = getEntityKeyForSelection(contentState, selectionState);
 
     const mustReset =
       !composedChars ||
@@ -159,8 +160,22 @@ const DraftEditorCompositionHandler = {
       entityKey !== null;
 
     if (mustReset) {
+      const blockKeys = [...contentState.getBlockMap().keys()];
+      const anchorKeyIndex = blockKeys.indexOf(selectionState.getAnchorKey());
+      const focusKeyIndex = blockKeys.indexOf(selectionState.getFocusKey());
+
+      invariant(
+        anchorKeyIndex === -1 || focusKeyIndex === -1,
+        'Content does not contain blocks in selection',
+      );
+
+      const targetBlocks =
+        anchorKeyIndex < focusKeyIndex
+          ? blockKeys.slice(anchorKeyIndex, focusKeyIndex + 1)
+          : blockKeys.slice(focusKeyIndex, anchorKeyIndex + 1);
+
       // Update the block which currently have focus
-      editor.restoreEditorBlocks([editorState.getSelection().getFocusKey()]);
+      editor.restoreEditorBlocks(targetBlocks);
     }
 
     editor.exitCurrentMode();
@@ -179,17 +194,20 @@ const DraftEditorCompositionHandler = {
       ) {
         return;
       }
-      // If characters have been composed, re-rendering with the update
-      // is sufficient to reset the editor.
-      const contentState = DraftModifier.replaceText(
-        editorState.getCurrentContent(),
-        editorState.getSelection(),
-        composedChars,
-        currentStyle,
-        entityKey,
-      );
       editor.update(
-        EditorState.push(editorState, contentState, 'insert-characters'),
+        EditorState.push(
+          editorState,
+          // If characters have been composed, re-rendering with the update
+          // is sufficient to reset the editor.
+          DraftModifier.replaceText(
+            contentState,
+            selectionState,
+            composedChars,
+            currentStyle,
+            entityKey,
+          ),
+          'insert-characters',
+        ),
       );
       return;
     }
