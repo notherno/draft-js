@@ -160,25 +160,17 @@ const DraftEditorCompositionHandler = {
       entityKey !== null;
 
     if (mustReset) {
-      const blockKeys = Array.from(contentState.getBlockMap().keys());
-      const anchorKeyIndex = blockKeys.indexOf(selectionState.getAnchorKey());
-      const focusKeyIndex = blockKeys.indexOf(selectionState.getFocusKey());
+      const anchorKey = selectionState.getAnchorKey();
+      const focusKey = selectionState.getFocusKey();
 
-      console.log({ blockKeys, targetBlocks, anchorKeyIndex, focusKeyIndex });
+      console.log({anchorKey, focusKey});
 
-      invariant(
-        anchorKeyIndex !== -1 && focusKeyIndex !== -1,
-        'Content does not contain blocks in selection',
-      );
-
-      const targetBlocks =
-        anchorKeyIndex < focusKeyIndex
-          ? blockKeys.slice(anchorKeyIndex, focusKeyIndex + 1)
-          : blockKeys.slice(focusKeyIndex, anchorKeyIndex + 1);
-
-
-      // Update the block which currently have focus
-      editor.restoreEditorBlocks(targetBlocks);
+      if (anchorKey !== focusKey) {
+        editor.restoreEditorDOM();
+      } else {
+        // Update the block which currently have focus
+        editor.restoreEditorBlock(focusKey);
+      }
     }
 
     editor.exitCurrentMode();

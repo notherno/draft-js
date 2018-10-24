@@ -552,20 +552,18 @@ class DraftEditor extends React.Component<DraftEditorProps, State> {
   /**
    * @todo fill out docs
    */
-  restoreEditorBlocks = (
-    targetBlockKeys: string[],
+  restoreEditorBlock = (
+    blockKey: string,
     scrollPosition?: DraftScrollPosition,
   ): void => {
     let {blockKeyRestoreMap} = this.state;
 
-    targetBlockKeys.forEach(blockKey => {
-      blockKeyRestoreMap = blockKeyRestoreMap.set(
-        blockKey,
-        blockKeyRestoreMap.has(blockKey)
-          ? blockKeyRestoreMap.get(blockKey) + 1
-          : 1,
-      );
-    });
+    blockKeyRestoreMap = blockKeyRestoreMap.set(
+      blockKey,
+      blockKeyRestoreMap.has(blockKey)
+        ? blockKeyRestoreMap.get(blockKey) + 1
+        : 1,
+    );
 
     this.setState({blockKeyRestoreMap}, () => {
       this.focus(scrollPosition);
