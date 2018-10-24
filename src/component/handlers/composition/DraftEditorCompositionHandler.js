@@ -160,7 +160,7 @@ const DraftEditorCompositionHandler = {
       entityKey !== null;
 
     if (mustReset) {
-      const blockKeys = [...contentState.getBlockMap().keys()];
+      const blockKeys = Array.from(contentState.getBlockMap().keys());
       const anchorKeyIndex = blockKeys.indexOf(selectionState.getAnchorKey());
       const focusKeyIndex = blockKeys.indexOf(selectionState.getFocusKey());
 
