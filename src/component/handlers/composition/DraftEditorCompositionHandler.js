@@ -163,8 +163,6 @@ const DraftEditorCompositionHandler = {
       const anchorKey = selectionState.getAnchorKey();
       const focusKey = selectionState.getFocusKey();
 
-      console.log({anchorKey, focusKey});
-
       if (anchorKey !== focusKey) {
         editor.restoreEditorDOM();
       } else {
