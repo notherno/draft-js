@@ -256,6 +256,7 @@ class DraftEditor extends React.Component<DraftEditorProps, State> {
     this.state = {
       // See `restoreEditorDOM()`.
       contentsKey: 0,
+      // See `restoreEditorBlockDOM()`.
       blockKeyRestoreMap: new Map({}),
     };
   }
@@ -550,9 +551,13 @@ class DraftEditor extends React.Component<DraftEditorProps, State> {
   };
 
   /**
-   * @todo fill out docs
+   * Used via `this.restoreEditorBlockDOM()`.
+   *
+   * Force a complete re-render of the DraftEditorBlock in DraftEditorContents
+   * specified by its blockKey. This is used when restoration of editor block DOM
+   * is necessary but the effect of change is scoped in a block.
    */
-  restoreEditorBlock = (
+  restoreEditorBlockDOM = (
     blockKey: string,
     scrollPosition?: DraftScrollPosition,
   ): void => {

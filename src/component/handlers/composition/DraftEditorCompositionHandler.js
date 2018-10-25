@@ -164,7 +164,7 @@ const DraftEditorCompositionHandler = {
 
       if (anchorKey === focusKey) {
         // Update the block which currently have focus
-        editor.restoreEditorBlock(focusKey);
+        editor.restoreEditorBlockDOM(focusKey);
       } else {
         // If selection contains 2 or more blocks, reset the whole contents
         editor.restoreEditorDOM();
@@ -188,16 +188,9 @@ const DraftEditorCompositionHandler = {
         return;
       }
 
-      const newEditorState = mustReset
-        ? EditorState.set(editorState, {
-            nativelyRenderedContent: null,
-            forceSelection: true,
-          })
-        : editorState;
-
       editor.update(
         EditorState.push(
-          newEditorState,
+          editorState,
           // If characters have been composed, re-rendering with the update
           // is sufficient to reset the editor.
           DraftModifier.replaceText(
